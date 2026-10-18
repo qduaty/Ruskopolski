@@ -21,6 +21,27 @@
         // else if(location.href.includes('.rs/')) return 'sr';
         else return null; // No language set
     }
+
+    let disableTransliteration = Number(localStorage.disableTransliteration || 0);
+    if (Number.isNaN(disableTransliteration)) localStorage.disableTransliteration = disableTransliteration = 0;
+    console.log(`${location.href}: disableTransliteration: ${disableTransliteration}`);
+    let cbDisableTransliteration = document.getElementById('cbDisableTransliteration');
+
+    if (cbDisableTransliteration == null)
+        document.body.append(Object.assign(document.createElement('input'), {
+            id: 'cbDisableTransliteration',
+            type: 'checkbox',
+            // style: 'position: absolute; top: 0; left: 0;',
+            onchange: ev => {
+                let oldValue = localStorage.disableTransliteration;
+                localStorage.disableTransliteration = ev.target.checked ? 1 : 0;
+                if (localStorage.disableTransliteration != oldValue)
+                    window.location.reload();
+            },
+            checked: disableTransliteration
+        }));
+    else cbDisableTransliteration.checked = disableTransliteration;
+
     const pageLang = getPageLanguage();
     console.log(`Język strony: ${pageLang}`);
     let isCyrillic = false;
@@ -35,7 +56,9 @@
         needsŁ = true;
     }
 
-    //const i_diacritic = '̂';
+    const firefox = navigator.userAgent.includes(' Gecko/');
+
+    // const i_diacritic = '̂';
     const i_diacritic = '́';
 
     let dict = {
@@ -80,16 +103,17 @@
         "П": "P",
         "р": "r",
         "Р": "R",
-        "ре": "řé",
+        "ре": "ře" + i_diacritic,
         "ри": "ři",
-        "ря": "řá",
+        "ря": "řa" + i_diacritic,
         // "сть": "ść",
         "с": "s",
         "С": "S",
-        // "ть": "ć",
-        // "Т̌Ь": "Ć",
         "т": "t",
         "Т": "T",
+        "ть": "ť",
+        "Ть": "Ť",
+        "ТЬ": "Ť",
         "ћ": "ć",
         "Ћ": "Ć",
         "у": "u",
@@ -103,12 +127,13 @@
         "Ц": "C",
         "ч": "č",
         "Ч": "Č",
+        "дь": "đ",
+        "Дь": "Đ",
+        "ДЬ": "Đ",
         "ђ": "đ",
         "Ђ": "Đ",
         "џ": "dž",
         "Џ": "Dž",
-        // "шь": "ś",
-        // "Ш̌Ь": "Ś",
         "ш": "š",
         "Ш": "Š",
         "щ": "ĉ",
@@ -160,6 +185,12 @@
             "лю": "lu",
             "ля": "la",
             "Ля": "La",
+        });
+    }
+    if (firefox) {
+        Object.assign(dict, {
+            "шь": "ṧ",
+            "Шь": "Ṥ",
         });
     }
     switch (pageLang) {
@@ -262,16 +293,25 @@
         //console.log(textNode.nodeValue);
     }
 
-    function r_traverse(node) {
-        if (node.nodeType === Node.ELEMENT_NODE && (node.isContentEditable || node.tagName === 'SCRIPT' || node.tagName === 'STYLE')) return false;
-        if (node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0) transliterate(node);
+    function r_traverse(node, disableTransliteration) {
+        if (node.nodeType === Node.ELEMENT_NODE && (node.isContentEditable || node.tagName === 'SCRIPT' || node.tagName === 'STYLE')) {
+            return false;
+        }
+        if (!disableTransliteration && node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0) {
+            transliterate(node);
+        }
 
         node = node.firstChild;
         while (node) {
-            r_traverse(node);
+            r_traverse(node, disableTransliteration);
             node = node.nextSibling;
         }
     }
-    setInterval(() => { r_traverse(document.body); }, 1000);
-    r_traverse(document.body);
+    setInterval(() => {
+        // const startTime = Date.now();
+        let cbDisableTransliteration = document.getElementById('cbDisableTransliteration');
+        r_traverse(document.body, cbDisableTransliteration?.checked);
+        // const seconds = Date.now() - startTime;
+        // console.log(`Transliterating took ${seconds}ms`)
+    }, 1000);
 })();
