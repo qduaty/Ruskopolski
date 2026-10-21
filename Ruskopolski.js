@@ -57,6 +57,7 @@
     }
 
     const firefox = navigator.userAgent.includes(' Gecko/');
+    const android = navigator?.userAgentData.platform == 'Android';
 
     // const i_diacritic = '̂';
     const i_diacritic = '́';
@@ -106,6 +107,9 @@
         "ре": "ře" + i_diacritic,
         "ри": "ři",
         "ря": "řa" + i_diacritic,
+        "Ре": "Ře" + i_diacritic,
+        "Ри": "Ři",
+        "Ря": "Řa" + i_diacritic,
         // "сть": "ść",
         "с": "s",
         "С": "S",
@@ -294,6 +298,10 @@
     }
 
     function r_traverse(node, disableTransliteration) {
+        if (disableTransliteration === undefined) {
+            const cbDisableTransliteration = document.getElementById('cbDisableTransliteration');
+            disableTransliteration = cbDisableTransliteration?.checked;
+        }
         if (node.nodeType === Node.ELEMENT_NODE && (node.isContentEditable || node.tagName === 'SCRIPT' || node.tagName === 'STYLE')) {
             return false;
         }
@@ -307,11 +315,13 @@
             node = node.nextSibling;
         }
     }
-    setInterval(() => {
-        // const startTime = Date.now();
-        let cbDisableTransliteration = document.getElementById('cbDisableTransliteration');
-        r_traverse(document.body, cbDisableTransliteration?.checked);
-        // const seconds = Date.now() - startTime;
-        // console.log(`Transliterating took ${seconds}ms`)
-    }, 1000);
+    r_traverse(document.body);
+    if (!android) {
+        setInterval(() => {
+            // const startTime = Date.now();
+            r_traverse(document.body);
+            // const seconds = Date.now() - startTime;
+            // console.log(`Transliterating took ${seconds}ms`)
+        }, 1000);
+    }
 })();
