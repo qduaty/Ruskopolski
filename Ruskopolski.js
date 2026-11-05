@@ -56,8 +56,8 @@
         needsŁ = true;
     }
 
-    const firefox = navigator.userAgent.includes(' Gecko/');
-    const android = navigator?.userAgentData.platform == 'Android';
+    const isFirefox = navigator.userAgent.includes(' Gecko/');
+    const isMobile = false; // navigator?.userAgentData.platform == 'Android';
 
     // const i_diacritic = '̂';
     const i_diacritic = '́';
@@ -191,7 +191,7 @@
             "Ля": "La",
         });
     }
-    if (firefox) {
+    if (isFirefox) {
         Object.assign(dict, {
             "шь": "ṧ",
             "Шь": "Ṥ",
@@ -316,7 +316,9 @@
         }
     }
     r_traverse(document.body);
-    if (!android) {
+    if (isMobile) {
+        ;
+    } else {
         setInterval(() => {
             // const startTime = Date.now();
             r_traverse(document.body);
