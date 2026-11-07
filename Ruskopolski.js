@@ -27,19 +27,29 @@
     console.log(`${location.href}: disableTransliteration: ${disableTransliteration}`);
     let cbDisableTransliteration = document.getElementById('cbDisableTransliteration');
 
-    if (cbDisableTransliteration == null)
-        document.body.append(Object.assign(document.createElement('input'), {
+    if (cbDisableTransliteration == null) {
+        let span = Object.assign(document.createElement('span'), {
+            style: 'position: absolute; top: 0; left: 0;',
+        });
+        span.append(Object.assign(document.createElement('input'), {
             id: 'cbDisableTransliteration',
             type: 'checkbox',
-            // style: 'position: absolute; top: 0; left: 0;',
             onchange: ev => {
                 let oldValue = localStorage.disableTransliteration;
                 localStorage.disableTransliteration = ev.target.checked ? 1 : 0;
                 if (localStorage.disableTransliteration != oldValue)
                     window.location.reload();
             },
-            checked: disableTransliteration
+            checked: disableTransliteration,
         }));
+        span.append(Object.assign(document.createElement('label'), {
+            htmlFor: 'cbDisableTransliteration',
+            innerHTML: 'Disable transliteration',
+            style: 'display: inline-block; vertical-align: middle;',
+        }));
+        document.body.append(span);
+
+    }
     else cbDisableTransliteration.checked = disableTransliteration;
 
     const pageLang = getPageLanguage();
@@ -58,9 +68,14 @@
 
     const isFirefox = navigator.userAgent.includes(' Gecko/');
     const isMobile = false; // navigator?.userAgentData.platform == 'Android';
+    const softLettersSoftenPrevious = true;
 
     // const i_diacritic = '̂';
-    const i_diacritic = '́';
+    const AcuteAccent = '́';
+    const GraveAccent = "̀";
+    const DotAccent = '̇';
+    const CaronAccent = '̌'; // háček
+    const CircumflexAccent = '̂'; // roof accent
 
     let dict = {
         "а": "a",
@@ -73,14 +88,14 @@
         "Г": "G",
         "д": "d",
         "Д": "D",
-        "е": "e" + i_diacritic,
-        "Е": "E" + i_diacritic,
-        "ё": "ô",
-        "Ё": "Ô",
-        "є": "e" + i_diacritic,
-        "Є": "E" + i_diacritic,
-        "ж": "ż",
-        "Ж": "Ż",
+        "е": "e" + AcuteAccent,
+        "Е": "E" + AcuteAccent,
+        "ё": "o" + CircumflexAccent,
+        "Ё": "O" + CircumflexAccent,
+        "є": "e" + AcuteAccent,
+        "Є": "E" + AcuteAccent,
+        "ж": "z" + DotAccent,
+        "Ж": "Z" + DotAccent,
         "з": "z",
         "З": "Z",
         "и": "i",
@@ -97,29 +112,23 @@
         "н": "n",
         "Н": "N",
         "Њ": "Ń",
-        "њ": "ń",
+        "њ": "n" + AcuteAccent,
         "о": "o",
         "О": "O",
         "п": "p",
         "П": "P",
         "р": "r",
         "Р": "R",
-        "ре": "ře" + i_diacritic,
-        "ри": "ři",
-        "ря": "řa" + i_diacritic,
-        "Ре": "Ře" + i_diacritic,
-        "Ри": "Ři",
-        "Ря": "Řa" + i_diacritic,
         // "сть": "ść",
         "с": "s",
         "С": "S",
         "т": "t",
         "Т": "T",
-        "ть": "ť",
-        "Ть": "Ť",
-        "ТЬ": "Ť",
-        "ћ": "ć",
-        "Ћ": "Ć",
+        // "ть": "ť",
+        // "Ть": "Ť",
+        // "ТЬ": "Ť",
+        "ћ": "c" + AcuteAccent,
+        "Ћ": "C" + AcuteAccent,
         "у": "u",
         "У": "U",
         'ў': 'ŭ',
@@ -129,30 +138,31 @@
         "Х": "Ch",
         "ц": "c",
         "Ц": "C",
-        "ч": "č",
-        "Ч": "Č",
+        "ч": "c" + CaronAccent,
+        "Ч": "C" + CaronAccent,
         "дь": "đ",
         "Дь": "Đ",
         "ДЬ": "Đ",
         "ђ": "đ",
         "Ђ": "Đ",
-        "џ": "dž",
-        "Џ": "Dž",
-        "ш": "š",
-        "Ш": "Š",
-        "щ": "ĉ",
-        "Щ": "Ĉ",
-        "ъ": "̀",
+        "џ": "dz" + CaronAccent,
+        "Џ": "Dz" + CaronAccent,
+        "ш": "s" + CaronAccent,
+        "Ш": "S" + CaronAccent,
+        "щ": "c" + CircumflexAccent,
+        "Щ": "C" + CircumflexAccent,
+        "ъ": GraveAccent,
         '\'': "̀", // it's not empty! post-grave accent
         "ы": "y",
         "Ы": "Y",
-        "ь": "́",
+        "ь": AcuteAccent,
+        "Ь": AcuteAccent,
         "э": "e",
         "Э": "E",
-        "ю": "u" + i_diacritic,
-        "Ю": "U" + i_diacritic,
-        "я": "a" + i_diacritic,
-        "Я": "A" + i_diacritic
+        "ю": "u" + AcuteAccent,
+        "Ю": "U" + AcuteAccent,
+        "я": "a" + AcuteAccent,
+        "Я": "A" + AcuteAccent
     }
     const prefixes = {
     };
@@ -164,12 +174,6 @@
         'ий': 'ī',
         "лії": "lii",
     };
-    if (false) // sort for display
-    {
-        const sortedKeys = Object.keys(dict).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
-        const newDict = Object.fromEntries(sortedKeys.map(key => [key, dict[key]]));
-        console.log(JSON.stringify(newDict, null, 2));
-    }
 
     if (needsŁ) {
         Object.assign(dict, {
@@ -191,6 +195,39 @@
             "Ля": "La",
         });
     }
+
+    if (softLettersSoftenPrevious) {
+        Object.assign(dict, {
+            "е": AcuteAccent + "e",
+            "Е": AcuteAccent + "E",
+            "ё": AcuteAccent + "o",
+            "Ё": AcuteAccent + "O",
+            "ю": AcuteAccent + "u",
+            "Ю": AcuteAccent + "U",
+            "я": AcuteAccent + "a",
+            "Я": AcuteAccent + "A",
+        });
+        Object.assign(prefixes, {
+            "е": "e" + AcuteAccent,
+            "Е": "E" + AcuteAccent,
+            "ё": "o" + AcuteAccent,
+            "Ё": "O" + AcuteAccent,
+            "ю": "u" + AcuteAccent,
+            "Ю": "U" + AcuteAccent,
+            "я": "ja",
+            "Я": "Ja"
+        });
+    } else {
+        Object.assign(dict, {
+            "ре": "ře" + AcuteAccent,
+            "ри": "ři",
+            "ря": "řa" + AcuteAccent,
+            "Ре": "Ře" + AcuteAccent,
+            "Ри": "Ři",
+            "Ря": "Řa" + AcuteAccent
+        });
+    }
+
     if (isFirefox) {
         Object.assign(dict, {
             "шь": "ṧ",
@@ -216,10 +253,6 @@
                 'ґ': 'g',
             });
             if (needsŁ) {
-                // Object.assign(dict, {
-                //     "ле": "łe",
-                //     "Ле": "Łe",
-                // });
                 Object.assign(suffixes, {
                     "лий": "łȳ",
                 // "лії": "lii",
@@ -230,11 +263,13 @@
             });
             break;
     }
-    if (['uk', 'be', 'be-tarask'].includes(pageLang)) {
-        Object.assign(dict, {
-        });
-    }
 
+    if (true) // sort for display
+    {
+        const sortedKeys = Object.keys(dict).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        const newDict = Object.fromEntries(sortedKeys.map(key => [key, dict[key]]));
+        console.log(JSON.stringify(newDict, null, 2));
+    }
 
     const sortedKeys = Object.keys(dict).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase())).reverse();
     dict = Object.fromEntries(sortedKeys.map(key => [key, dict[key]]));
@@ -245,7 +280,6 @@
         const addMarkings = false;
         const appendOriginals = false;
         const appendTranslations = true;
-        const marking = addMarkings ? '·' : '';
 
         let result = '';
         //console.log(`word: ${origText}`);
@@ -266,7 +300,40 @@
             let found = false;
             for (let key in dict) {
                 if (word.startsWith(key, i)) {
-                    result += (appendTranslations ? marking + dict[key] : '') + (appendOriginals ? '·' + key : '');
+                    if (addMarkings) result += '·';
+                    if (appendTranslations) {
+                        let replacement = dict[key];
+                        if (replacement.startsWith(AcuteAccent)) {
+                            let suffix = null;
+                            if (result.endsWith(AcuteAccent)) {
+                                result = result.slice(0, -1);
+                                suffix = '̋';
+                            }
+                            // else if (result.endsWith(DotAccent)) {
+                            //     result = result.slice(0, -1);
+                            //     suffix = '̈';
+                            // }
+                            else if (result.endsWith(GraveAccent)) {
+                                result = result.slice(0, -1);
+                                suffix = '̽';
+                            }
+                            else if (result.endsWith(CaronAccent) || result.endsWith(DotAccent)) {
+                                result = result.slice(0, -1);
+                                // suffix = '̐';
+                                suffix = '̊';
+                            }
+                            else if(result.endsWith(CircumflexAccent)) {
+                                result = result.slice(0, -1);
+                                suffix = '̃';
+                            }
+                            if (suffix !== null) {
+                                replacement = replacement.slice(1);
+                                result += suffix;
+                            }
+                        }
+                        result += replacement;
+                    }
+                    if(appendOriginals) result += '·' + key;
                     i += key.length - 1;
                     found = true;
                     break;
