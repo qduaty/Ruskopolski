@@ -22,38 +22,39 @@
         else return null; // No language set
     }
 
-    let disableTransliteration = Number(localStorage.disableTransliteration || 0);
-    if (Number.isNaN(disableTransliteration)) localStorage.disableTransliteration = disableTransliteration = 0;
-    console.log(`${location.href}: disableTransliteration: ${disableTransliteration}`);
-    let cbDisableTransliteration = document.getElementById('cbDisableTransliteration');
+    const disableTransliteration = false;
+    // let disableTransliteration = Number(localStorage.disableTransliteration || 0);
+    // if (Number.isNaN(disableTransliteration)) localStorage.disableTransliteration = disableTransliteration = 0;
+    // console.log(`${location.href}: disableTransliteration: ${disableTransliteration}`);
+    // let cbDisableTransliteration = document.getElementById('cbDisableTransliteration');
 
-    if (cbDisableTransliteration == null) {
-        let span = Object.assign(document.createElement('span'), {
-            style: 'position: absolute; top: 0; left: 0;',
-        });
-        span.append(Object.assign(document.createElement('input'), {
-            id: 'cbDisableTransliteration',
-            type: 'checkbox',
-            onchange: ev => {
-                let oldValue = localStorage.disableTransliteration;
-                localStorage.disableTransliteration = ev.target.checked ? 1 : 0;
-                if (localStorage.disableTransliteration != oldValue)
-                    window.location.reload();
-            },
-            checked: disableTransliteration,
-        }));
-        span.append(Object.assign(document.createElement('label'), {
-            htmlFor: 'cbDisableTransliteration',
-            innerHTML: 'Disable transliteration',
-            style: 'display: inline-block; vertical-align: middle;',
-        }));
-        document.body.append(span);
+    // if (cbDisableTransliteration == null) {
+    //     let span = Object.assign(document.createElement('span'), {
+    //         style: 'position: absolute; top: 0; left: 0;',
+    //     });
+    //     span.append(Object.assign(document.createElement('input'), {
+    //         id: 'cbDisableTransliteration',
+    //         type: 'checkbox',
+    //         onchange: ev => {
+    //             let oldValue = localStorage.disableTransliteration;
+    //             localStorage.disableTransliteration = ev.target.checked ? 1 : 0;
+    //             if (localStorage.disableTransliteration != oldValue)
+    //                 window.location.reload();
+    //         },
+    //         checked: disableTransliteration,
+    //     }));
+    //     span.append(Object.assign(document.createElement('label'), {
+    //         htmlFor: 'cbDisableTransliteration',
+    //         innerHTML: 'Disable transliteration',
+    //         style: 'display: inline-block; vertical-align: middle;',
+    //     }));
+    //     document.body.append(span);
 
-    }
-    else cbDisableTransliteration.checked = disableTransliteration;
+    // }
+    // else cbDisableTransliteration.checked = disableTransliteration;
 
     const pageLang = getPageLanguage();
-    console.log(`Język strony: ${pageLang}`);
+    console.log(`pageLang: ${pageLang}`);
     let isCyrillic = false;
     let needsŁ = false;
     if (['ru', 'sr', 'sr-rs', 'uk', 'bg', 'be-tarask', 'be'].includes(pageLang)
@@ -141,9 +142,9 @@
         "Ц": "C",
         "ч": "c" + CaronAccent,
         "Ч": "C" + CaronAccent,
-        "дь": "đ",
-        "Дь": "Đ",
-        "ДЬ": "Đ",
+        // "дь": "đ",
+        // "Дь": "Đ",
+        // "ДЬ": "Đ",
         "ђ": "đ",
         "Ђ": "Đ",
         "џ": "dz" + CaronAccent,
@@ -265,7 +266,7 @@
             break;
     }
 
-    if (true) // sort for display
+    if (false) // sort for display
     {
         const sortedKeys = Object.keys(dict).sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
         const newDict = Object.fromEntries(sortedKeys.map(key => [key, dict[key]]));
@@ -308,28 +309,57 @@
                             let suffix = null;
                             if (result.endsWith(AcuteAccent)) {
                                 result = result.slice(0, -1);
-                                suffix = '̋';
+                                suffix = '̋'; // double acute
                             }
-                            // else if (result.endsWith(DotAccent)) {
-                            //     result = result.slice(0, -1);
-                            //     suffix = '̈';
-                            // }
                             else if (result.endsWith(GraveAccent)) {
                                 result = result.slice(0, -1);
-                                suffix = '̽';
+                                suffix = '̽'; // x
                             }
                             else if (result.endsWith(CaronAccent) || result.endsWith(DotAccent)) {
                                 result = result.slice(0, -1);
-                                // suffix = '̐';
-                                suffix = '̊';
+                                // suffix = '̐'; // candrabindu
+                                suffix = '̊'; // ring
                             }
                             else if(result.endsWith(CircumflexAccent)) {
                                 result = result.slice(0, -1);
-                                suffix = '̃';
+                                // suffix = '᷉'; // zig-zag
+                                suffix = '̃'; // tilde
                             }
+                            // else if(result.endsWith('b')) {
+                            //     result = result.slice(0, -1);
+                            //     suffix = 'ƀƁ';
+                            // }
+                            // else if(result.endsWith('B')) {
+                            //     result = result.slice(0, -1);
+                            //     suffix = 'Ɓ';
+                            // }
+                            // else if(result.endsWith('d')) {
+                            //     result = result.slice(0, -1);
+                            //     suffix = 'đ';
+                            // }
+                            // else if(result.endsWith('D')) {
+                            //     result = result.slice(0, -1);
+                            //     suffix = 'Đ';
+                            // }
+                            // else if(result.endsWith('h')) {
+                            //     result = result.slice(0, -1);
+                            //     suffix = 'ħ';
+                            // }
+                            // else if(result.endsWith('H')) {
+                            //     result = result.slice(0, -1);
+                            //     suffix = 'Ħ';
+                            // }
+                            // else if(result.endsWith('t')) {
+                            //     result = result.slice(0, -1);
+                            //     suffix = 'ŧ';
+                            // }
+                            // else if(result.endsWith('T')) {
+                            //     result = result.slice(0, -1);
+                            //     suffix = 'Ŧ';
+                            // }
                             if (suffix !== null) {
-                                replacement = replacement.slice(1);
                                 result += suffix;
+                                replacement = replacement.slice(1);
                             }
                         }
                         result += replacement;
