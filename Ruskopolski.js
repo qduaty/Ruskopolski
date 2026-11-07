@@ -68,7 +68,8 @@
 
     const isFirefox = navigator.userAgent.includes(' Gecko/');
     const isMobile = false; // navigator?.userAgentData.platform == 'Android';
-    const softLettersSoftenPrevious = true;
+    const SoftLettersSoftenPrevious = true;
+    const CompoundAccents = true;
 
     // const i_diacritic = '̂';
     const AcuteAccent = '́';
@@ -196,7 +197,7 @@
         });
     }
 
-    if (softLettersSoftenPrevious) {
+    if (SoftLettersSoftenPrevious) {
         Object.assign(dict, {
             "е": AcuteAccent + "e",
             "Е": AcuteAccent + "E",
@@ -303,7 +304,7 @@
                     if (addMarkings) result += '·';
                     if (appendTranslations) {
                         let replacement = dict[key];
-                        if (replacement.startsWith(AcuteAccent)) {
+                        if (CompoundAccents && replacement.startsWith(AcuteAccent)) {
                             let suffix = null;
                             if (result.endsWith(AcuteAccent)) {
                                 result = result.slice(0, -1);
