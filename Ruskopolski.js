@@ -6,7 +6,9 @@
 // @author       You
 // @match        */*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=russiatoday.ru
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @grant        GM_registerMenuCommand
 // ==/UserScript==
 
 (function () {
@@ -22,55 +24,46 @@
         else return null; // No language set
     }
 
-    const disableTransliteration = false;
-    // let disableTransliteration = Number(localStorage.disableTransliteration || 0);
-    // if (Number.isNaN(disableTransliteration)) localStorage.disableTransliteration = disableTransliteration = 0;
-    // console.log(`${location.href}: disableTransliteration: ${disableTransliteration}`);
-    // let cbDisableTransliteration = document.getElementById('cbDisableTransliteration');
+    // false true
+    const SoftLettersSoftenPrevious = true;
+    const CompoundAccents = true;
+    let compoundTallSmallLetters = GM_getValue('CompoundTallSmallLetters', false);
+    const AddMarkings = false;
+    const AppendOriginals = false;
+    const AppendTranslations = true;
 
-    // if (cbDisableTransliteration == null) {
-    //     let span = Object.assign(document.createElement('span'), {
-    //         style: 'position: absolute; top: 0; left: 0;',
-    //     });
-    //     span.append(Object.assign(document.createElement('input'), {
-    //         id: 'cbDisableTransliteration',
-    //         type: 'checkbox',
-    //         onchange: ev => {
-    //             let oldValue = localStorage.disableTransliteration;
-    //             localStorage.disableTransliteration = ev.target.checked ? 1 : 0;
-    //             if (localStorage.disableTransliteration != oldValue)
-    //                 window.location.reload();
-    //         },
-    //         checked: disableTransliteration,
-    //     }));
-    //     span.append(Object.assign(document.createElement('label'), {
-    //         htmlFor: 'cbDisableTransliteration',
-    //         innerHTML: 'Disable transliteration',
-    //         style: 'display: inline-block; vertical-align: middle;',
-    //     }));
-    //     document.body.append(span);
-
-    // }
-    // else cbDisableTransliteration.checked = disableTransliteration;
+    let disableTransliteration = localStorage.disableTransliteration == 'true';
+    console.log(`${location.href}: disableTransliteration: ${disableTransliteration}`);
+    GM_registerMenuCommand("Toggle transliteration", () => {
+        disableTransliteration = !disableTransliteration;
+        localStorage['disableTransliteration'] = disableTransliteration;
+        // alert(`${location.href}: localStorage.disableTransliteration: ${localStorage.disableTransliteration}`);
+        window.location.reload();
+    });
+    if (!disableTransliteration) {
+        GM_registerMenuCommand("Toggle compound tall small letters", () => {
+            compoundTallSmallLetters = !compoundTallSmallLetters;
+            GM_setValue('CompoundTallSmallLetters', compoundTallSmallLetters);
+            window.location.reload();
+        });
+    }
 
     const pageLang = getPageLanguage();
     console.log(`pageLang: ${pageLang}`);
     let isCyrillic = false;
     let needsŁ = false;
-    if (['ru', 'sr', 'sr-rs', 'uk', 'bg', 'be-tarask', 'be'].includes(pageLang)
+    if (['ru', 'sr', 'sr-rs', 'uk', 'bg', 'be-tarask', 'be', 'mk'].includes(pageLang)
         || location.href.includes('x.com/')
         || [...decodeURIComponent(location.href)].some(c => c >= '\u0400' && c <= '\u04FF'))
         isCyrillic = true;
 
     if (!isCyrillic) return;
-    if (['ru', 'be', 'be-tarask', 'uk'].includes(pageLang) || location.href.includes('x.com/')) {
+    if (['ru', 'be', 'be-tarask', 'uk', 'bg', 'mk'].includes(pageLang) || location.href.includes('x.com/')) {
         needsŁ = true;
     }
 
     const isFirefox = navigator.userAgent.includes(' Gecko/');
     const isMobile = false; // navigator?.userAgentData.platform == 'Android';
-    const SoftLettersSoftenPrevious = true;
-    const CompoundAccents = true;
 
     // const i_diacritic = '̂';
     const AcuteAccent = '́';
@@ -86,6 +79,7 @@
         "Б": "B",
         "в": "v",
         "В": "V",
+        "Вт": "W",
         "г": "g",
         "Г": "G",
         "д": "d",
@@ -188,7 +182,8 @@
             "Ли": "Li",
             "лі": "li",
             "Лі": "Li",
-            "лл": "ll",
+            "лле": "lle",
+            "лли": "lli",
             "ль": "l",
             "Ль": "L",
             "Лю": "Lu",
@@ -230,12 +225,13 @@
         });
     }
 
-    if (isFirefox) {
-        Object.assign(dict, {
-            "шь": "ṧ",
-            "Шь": "Ṥ",
-        });
-    }
+    // obsolete?
+    // if (isFirefox) {
+    //     Object.assign(dict, {
+    //         "шь": "ṧ",
+    //         "Шь": "Ṥ",
+    //     });
+    // }
     switch (pageLang) {
         case 'be':
             Object.assign(dict, {
@@ -278,11 +274,6 @@
     // console.log(JSON.stringify(dict, null, 2));
 
     function processWord(word) {
-        // false true
-        const addMarkings = false;
-        const appendOriginals = false;
-        const appendTranslations = true;
-
         let result = '';
         //console.log(`word: ${origText}`);
         for (let key in prefixes) {
@@ -302,8 +293,7 @@
             let found = false;
             for (let key in dict) {
                 if (word.startsWith(key, i)) {
-                    if (addMarkings) result += '·';
-                    if (appendTranslations) {
+                    if (AppendTranslations) {
                         let replacement = dict[key];
                         if (CompoundAccents && replacement.startsWith(AcuteAccent)) {
                             let suffix = null;
@@ -325,38 +315,46 @@
                                 // suffix = '᷉'; // zig-zag
                                 suffix = '̃'; // tilde
                             }
-                            // else if(result.endsWith('b')) {
-                            //     result = result.slice(0, -1);
-                            //     suffix = 'ƀƁ';
-                            // }
-                            // else if(result.endsWith('B')) {
-                            //     result = result.slice(0, -1);
-                            //     suffix = 'Ɓ';
-                            // }
-                            // else if(result.endsWith('d')) {
-                            //     result = result.slice(0, -1);
-                            //     suffix = 'đ';
-                            // }
-                            // else if(result.endsWith('D')) {
-                            //     result = result.slice(0, -1);
-                            //     suffix = 'Đ';
-                            // }
-                            // else if(result.endsWith('h')) {
-                            //     result = result.slice(0, -1);
-                            //     suffix = 'ħ';
-                            // }
-                            // else if(result.endsWith('H')) {
-                            //     result = result.slice(0, -1);
-                            //     suffix = 'Ħ';
-                            // }
-                            // else if(result.endsWith('t')) {
-                            //     result = result.slice(0, -1);
-                            //     suffix = 'ŧ';
-                            // }
-                            // else if(result.endsWith('T')) {
-                            //     result = result.slice(0, -1);
-                            //     suffix = 'Ŧ';
-                            // }
+                            else if (compoundTallSmallLetters) {
+                                if (result.endsWith('b')) {
+                                    result = result.slice(0, -1);
+                                    suffix = 'ƀ';
+                                }
+                                // else if (result.endsWith('B')) {
+                                //     result = result.slice(0, -1);
+                                //     suffix = 'Ɓ';
+                                // }
+                                else if (result.endsWith('d')) {
+                                    result = result.slice(0, -1);
+                                    suffix = 'đ';
+                                }
+                                // else if (result.endsWith('D')) {
+                                //     result = result.slice(0, -1);
+                                //     suffix = 'Đ';
+                                // }
+                                else if(result.endsWith('h')) {
+                                    result = result.slice(0, -1);
+                                    suffix = 'ħ';
+                                }
+                                // else if(result.endsWith('H')) {
+                                //     result = result.slice(0, -1);
+                                //     suffix = 'Ħ';
+                                // }
+                                else if (result.endsWith('k')) {
+                                    result = result.slice(0, -1);
+                                    suffix = 'ĸ' + AcuteAccent;
+                                }
+                                else if (result.endsWith('t')) {
+                                    result = result.slice(0, -1);
+                                    suffix = 'ŧ';
+                                    // suffix = 'ť';
+                                }
+                                // else if (result.endsWith('T')) {
+                                //     result = result.slice(0, -1);
+                                //     suffix = 'Ŧ';
+                                //     suffix = 'Ť';
+                                // }
+                            }
                             if (suffix !== null) {
                                 result += suffix;
                                 replacement = replacement.slice(1);
@@ -364,7 +362,8 @@
                         }
                         result += replacement;
                     }
-                    if(appendOriginals) result += '·' + key;
+                    if (AppendOriginals) result += '|' + key;
+                    if (AddMarkings) result += '·';
                     i += key.length - 1;
                     found = true;
                     break;
@@ -396,10 +395,6 @@
     }
 
     function r_traverse(node, disableTransliteration) {
-        if (disableTransliteration === undefined) {
-            const cbDisableTransliteration = document.getElementById('cbDisableTransliteration');
-            disableTransliteration = cbDisableTransliteration?.checked;
-        }
         if (node.nodeType === Node.ELEMENT_NODE && (node.isContentEditable || node.tagName === 'SCRIPT' || node.tagName === 'STYLE')) {
             return false;
         }
@@ -413,13 +408,13 @@
             node = node.nextSibling;
         }
     }
-    r_traverse(document.body);
-    if (isMobile) {
+    r_traverse(document.body, disableTransliteration);
+    if (isMobile || AppendOriginals) {
         ;
     } else {
         setInterval(() => {
             // const startTime = Date.now();
-            r_traverse(document.body);
+            r_traverse(document.body, disableTransliteration);
             // const seconds = Date.now() - startTime;
             // console.log(`Transliterating took ${seconds}ms`)
         }, 1000);
