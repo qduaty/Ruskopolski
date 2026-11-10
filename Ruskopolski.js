@@ -65,7 +65,6 @@
     const isFirefox = navigator.userAgent.includes(' Gecko/');
     const isMobile = false; // navigator?.userAgentData.platform == 'Android';
 
-    // const i_diacritic = '̂';
     const AcuteAccent = '́';
     const GraveAccent = "̀";
     const DotAccent = '̇';
@@ -205,14 +204,14 @@
             "Я": AcuteAccent + "A",
         });
         Object.assign(prefixes, {
-            "е": "e" + AcuteAccent,
             "Е": "E" + AcuteAccent,
-            "ё": "o" + AcuteAccent,
             "Ё": "O" + AcuteAccent,
-            "ю": "u" + AcuteAccent,
             "Ю": "U" + AcuteAccent,
-            "я": "ja",
-            "Я": "Ja"
+            "Я": "A" + AcuteAccent,
+            "е": "e" + AcuteAccent,
+            "ё": "o" + AcuteAccent,
+            "ю": "u" + AcuteAccent,
+            "я": "a" + AcuteAccent,
         });
     } else {
         Object.assign(dict, {
@@ -374,6 +373,7 @@
         return result;
     }
 
+    // "е Е ё Ё ю Ю я Я "
     function transliterate(textNode) {
         let polishText = '';
         const origText = textNode.nodeValue;
