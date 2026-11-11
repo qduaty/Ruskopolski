@@ -14,10 +14,10 @@ The script's Tampermonkey menu allows to toggle transliteration per page and com
 
 ### Rules
 - Acute accent (´) softens consonants or appends *j* to vowels.
-- Grave accent (`) hardens consonants.
-- Caron accent (ˇ) is used to create a "háček" sound. There is currently one exception from this rule with Polish *ż*.
-- Circumflex accent (ˆ) is only used for the letter *щ*, which often translates to *c* in languages using Latin script.
-- Macron accent (¯) indicates obvious Ruthenian endings, which translate to a single letter in Western/Southern languages.
+- Grave accent (`) hardens consonants or prepends *j* for initial *Е, Ё, Ю, Я* and their small counterparts.
+- Caron accent (ˇ) creates a "háček" sound. There is currently one exception from this rule: Polish *ż*.
+- Circumflex accent (ˆ) creates *щ* representation as *ĉ*, because it often translates to *c* in Latin script.
+- Macron accent (¯) indicates obvious Ruthenian endings, which translate to a single letter in Latin script.
 - Two subsequent accents are combined to facilitate rendering:
   - grave+acute turns into x
   - double acute becomes just that

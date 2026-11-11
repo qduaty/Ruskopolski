@@ -70,6 +70,7 @@
     const DotAccent = '̇';
     const CaronAccent = '̌'; // háček
     const CircumflexAccent = '̂'; // roof accent
+    const MacronAccent = '̄';
 
     let dict = {
         "а": "a",
@@ -159,14 +160,13 @@
         "я": "a" + AcuteAccent,
         "Я": "A" + AcuteAccent
     }
-    const prefixes = {
-    };
+    const prefixes = { };
     const suffixes = {
-        'ый': 'ȳ',
-        'ая': 'ā',
-        'ые': 'ē',
-        "лий": "lī",
-        'ий': 'ī',
+        'ый': 'y' + MacronAccent,
+        'ая': 'a' + MacronAccent,
+        'ые': 'e' + MacronAccent,
+        "лий": "li" + MacronAccent,
+        'ий': 'i' + MacronAccent,
         "лії": "lii",
     };
 
@@ -204,14 +204,14 @@
             "Я": AcuteAccent + "A",
         });
         Object.assign(prefixes, {
-            "Е": "E" + AcuteAccent,
-            "Ё": "O" + AcuteAccent,
-            "Ю": "U" + AcuteAccent,
-            "Я": "A" + AcuteAccent,
-            "е": "e" + AcuteAccent,
-            "ё": "o" + AcuteAccent,
-            "ю": "u" + AcuteAccent,
-            "я": "a" + AcuteAccent,
+            "Е": "E" + GraveAccent,
+            "Ё": "O" + GraveAccent,
+            "Ю": "U" + GraveAccent,
+            "Я": "A" + GraveAccent,
+            "е": "e" + GraveAccent,
+            "ё": "o" + GraveAccent,
+            "ю": "u" + GraveAccent,
+            "я": "a" + GraveAccent,
         });
     } else {
         Object.assign(dict, {
