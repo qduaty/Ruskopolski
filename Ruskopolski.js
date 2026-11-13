@@ -249,6 +249,12 @@
                 'Ґ': 'G',
                 'ґ': 'g',
             });
+            Object.assign(prefixes, {
+                'Е': 'E',
+                'е': 'e',
+                "є": "e" + GraveAccent,
+                "Є": "E" + GraveAccent,
+            });
             if (needsŁ) {
                 Object.assign(suffixes, {
                     "лий": "łȳ",
@@ -257,6 +263,16 @@
             }
             Object.assign(suffixes, {
                 'ий': 'ȳ',
+            });
+            break;
+        case 'sr':
+            Object.assign(dict, {
+                'Е': 'E',
+                'е': 'e',
+            });
+            Object.assign(prefixes, {
+                'Е': 'E',
+                'е': 'e',
             });
             break;
     }
