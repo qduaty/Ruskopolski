@@ -29,7 +29,8 @@ The script's Tampermonkey menu allows to toggle transliteration per page and com
 - Working.
 
 ### Example 1 (Ukrainian wikipedia)
-<img width="1163" height="1179" alt="image" src="https://github.com/user-attachments/assets/3d390369-a9d7-47ad-9e8a-6f584cec3079" />
+<img width="1156" height="1454" alt="image" src="https://github.com/user-attachments/assets/4de9ffa1-7991-4b8e-8f3d-a589250b3041" />
+
 ### Example 2 (Russian news site pravda.ru, with compound tall letters enabled)
 <img width="1734" height="1253" alt="image" src="https://github.com/user-attachments/assets/7dbed5a0-1364-4e47-9366-482ff4d6974d" />
 
