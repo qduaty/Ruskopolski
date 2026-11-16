@@ -87,10 +87,10 @@
         "Д": "D",
         "е": "e" + AcuteAccent,
         "Е": "E" + AcuteAccent,
-        "ё": "o" + CircumflexAccent,
-        "Ё": "O" + CircumflexAccent,
         "є": "e" + AcuteAccent,
         "Є": "E" + AcuteAccent,
+        "ё": "o" + CircumflexAccent,
+        "Ё": "O" + CircumflexAccent,
         "ж": "z" + DotAccent,
         "Ж": "Z" + DotAccent,
         "з": "z",
@@ -205,14 +205,14 @@
             "Я": AcuteAccent + "A",
         });
         Object.assign(prefixes, {
-            "Е": "E" + GraveAccent,
-            "Ё": "O" + GraveAccent,
-            "Ю": "U" + GraveAccent,
-            "Я": "A" + GraveAccent,
-            "е": "e" + GraveAccent,
-            "ё": "o" + GraveAccent,
-            "ю": "u" + GraveAccent,
-            "я": "a" + GraveAccent,
+            "Е": "E" + CircumflexAccent,
+            "Ё": "O" + CircumflexAccent,
+            "Ю": "U" + CircumflexAccent,
+            "Я": "A" + CircumflexAccent,
+            "е": "e" + CircumflexAccent,
+            "ё": "o" + CircumflexAccent,
+            "ю": "u" + CircumflexAccent,
+            "я": "a" + CircumflexAccent,
         });
     } else {
         Object.assign(dict, {
@@ -253,8 +253,8 @@
             Object.assign(prefixes, {
                 'Е': 'E',
                 'е': 'e',
-                "є": "e" + GraveAccent,
-                "Є": "E" + GraveAccent,
+                "є": "e" + CircumflexAccent,
+                "Є": "E" + CircumflexAccent,
             });
             if (needsŁ) {
                 Object.assign(suffixes, {
