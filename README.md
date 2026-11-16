@@ -30,9 +30,9 @@ representation as *ĉ*, because it often translates to *c* in Latin script.
 - Working.
 
 ### Example 1 (Ukrainian wikipedia)
-<img width="1156" height="1454" alt="image" src="https://github.com/user-attachments/assets/4de9ffa1-7991-4b8e-8f3d-a589250b3041" />
+<img height="1000" alt="image" src="https://github.com/user-attachments/assets/fe0d58bf-3f62-4055-9829-8eb8845a1b69" />
 
 ### Example 2 (Russian news site pravda.ru, with compound tall letters enabled)
-<img width="1734" height="1253" alt="image" src="https://github.com/user-attachments/assets/7dbed5a0-1364-4e47-9366-482ff4d6974d" />
+<img width="2177" height="1118" alt="image" src="https://github.com/user-attachments/assets/f45abfad-2fd0-4214-8161-2a29f77b191d" />
 
 
