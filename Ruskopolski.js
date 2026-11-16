@@ -15,8 +15,6 @@
     'use strict';
     function getPageLanguage() {
         const htmlLang = document.documentElement.lang;
-
-        // Normalize and validate
         if (typeof htmlLang === 'string' && htmlLang.trim() !== '') return htmlLang.trim().toLowerCase();
         else if (location.href.includes('booksprime.ru/')) return 'ru';
         //else if(location.href.includes('.ru/') || location.href.startsWith('file:')) return 'ru';
@@ -31,8 +29,10 @@
     const AddMarkings = false;
     const AppendOriginals = false;
     const AppendTranslations = true;
+    let polishŻ = GM_getValue('PolishŻ', false);
+    let czechŘ = GM_getValue('CzechŘ', false);
 
-    let disableTransliteration = localStorage.disableTransliteration == 'true';
+    let disableTransliteration = localStorage.getItem('disableTransliteration') === 'true';
     console.log(`${location.href}: disableTransliteration: ${disableTransliteration}`);
     GM_registerMenuCommand("Toggle transliteration", () => {
         disableTransliteration = !disableTransliteration;
@@ -44,6 +44,16 @@
         GM_registerMenuCommand("Toggle compound tall small letters", () => {
             compoundTallSmallLetters = !compoundTallSmallLetters;
             GM_setValue('CompoundTallSmallLetters', compoundTallSmallLetters);
+            window.location.reload();
+        });
+        GM_registerMenuCommand("Toggle Polish Ż", () => {
+            polishŻ = !polishŻ;
+            GM_setValue('PolishŻ', polishŻ);
+            window.location.reload();
+        });
+        GM_registerMenuCommand("Toggle Czech Ř", () => {
+            czechŘ = !czechŘ;
+            GM_setValue('CzechŘ', czechŘ);
             window.location.reload();
         });
     }
@@ -91,8 +101,8 @@
         "Є": "E" + AcuteAccent,
         "ё": "o" + CircumflexAccent,
         "Ё": "O" + CircumflexAccent,
-        "ж": "z" + DotAccent,
-        "Ж": "Z" + DotAccent,
+        "ж": "z" + (polishŻ ? DotAccent : CaronAccent),
+        "Ж": "Z" + (polishŻ ? DotAccent : CaronAccent),
         "з": "z",
         "З": "Z",
         "и": "i",
@@ -311,6 +321,9 @@
                 if (word.startsWith(key, i)) {
                     if (AppendTranslations) {
                         let replacement = dict[key];
+                        if (czechŘ && (result.endsWith('r') || result.endsWith('R')) && replacement.startsWith(AcuteAccent)) {
+                            replacement = CaronAccent + replacement.slice(1);
+                        }
                         if (CompoundAccents && replacement.startsWith(AcuteAccent)) {
                             let suffix = null;
                             if (result.endsWith(AcuteAccent)) {
@@ -389,8 +402,6 @@
         }
         return result;
     }
-
-    // "е Е ё Ё ю Ю я Я "
     function transliterate(textNode) {
         let processedText = '';
         const origText = textNode.nodeValue;
@@ -411,29 +422,30 @@
         //console.log(textNode.nodeValue);
     }
 
-    function r_traverse(node, disableTransliteration) {
-        if (node.nodeType === Node.ELEMENT_NODE && (node.isContentEditable || node.tagName === 'SCRIPT' || node.tagName === 'STYLE')) {
+    function r_traverse(node, options = {}) {
+        const startTime = Date.now();
+        options.disableTransliteration = options.disableTransliteration || false;
+        options.countTime = options.countTime || false;
+        if (node.nodeType === Node.ELEMENT_NODE && (node.isContentEditable || node.tagName === 'SCRIPT' || node.tagName === 'STYLE'))
             return false;
-        }
-        if (!disableTransliteration && node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0) {
+
+        if (!options.disableTransliteration && node.nodeType === Node.TEXT_NODE && node.nodeValue.trim().length > 0)
             transliterate(node);
-        }
 
         node = node.firstChild;
         while (node) {
-            r_traverse(node, disableTransliteration);
+            r_traverse(node, { ...options, countTime: false });
             node = node.nextSibling;
         }
+        const ms = Date.now() - startTime;
+        if (options.countTime) console.log(`Transliterating took ${ms}ms`)
     }
-    r_traverse(document.body, disableTransliteration);
+    r_traverse(document.body, { countTime: true, disableTransliteration: disableTransliteration });
     if (isMobile || AppendOriginals) {
         ;
     } else {
         setInterval(() => {
-            // const startTime = Date.now();
-            r_traverse(document.body, disableTransliteration);
-            // const seconds = Date.now() - startTime;
-            // console.log(`Transliterating took ${seconds}ms`)
+            r_traverse(document.body, { disableTransliteration: disableTransliteration });
         }, 1000);
     }
 })();
