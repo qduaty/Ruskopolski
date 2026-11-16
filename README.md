@@ -19,12 +19,17 @@ The script's Tampermonkey menu allows to toggle transliteration per page and com
 - Circumflex accent (ˆ) prepends *j* for initial *Е, Ё, Ю, Я* and their small counterparts or creates *щ* 
 representation as *ĉ*, because it often translates to *c* in Latin script.
 - Macron accent (¯) indicates obvious Ruthenian endings, which translate to a single letter in Latin script.
-- Two subsequent accents are combined to facilitate rendering:
-  - grave+acute turns into x
-  - double acute becomes just that
-  - caron+acute becomes a circle
-  - curcumflex+acute turns into a tilde.
 - *л/ль* is transliterated as *ł* or *l*, respectively, and all softening combinations are supported.
+
+#### Options:
+- Two subsequent accents can be combined to facilitate rendering:
+	- grave+acute turns into x
+	- double acute becomes just that
+	- caron+acute becomes a circle
+	- curcumflex+acute turns into a tilde.
+- Tall small letters can be optimized if they are being softened.
+- Soft r can be represented as *ŕ* or *ř*.
+- ж can be represented as *ž* or *ż*.
 
 ### Status
 - Working.
@@ -32,7 +37,7 @@ representation as *ĉ*, because it often translates to *c* in Latin script.
 ### Example 1 (Ukrainian wikipedia)
 <img height="1000" alt="image" src="https://github.com/user-attachments/assets/fe0d58bf-3f62-4055-9829-8eb8845a1b69" />
 
-### Example 2 (Russian news site pravda.ru, with compound tall letters enabled)
+### Example 2 (Russian news site pravda.ru)
 <img width="2177" height="1118" alt="image" src="https://github.com/user-attachments/assets/f45abfad-2fd0-4214-8161-2a29f77b191d" />
 
 

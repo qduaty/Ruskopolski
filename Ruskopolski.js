@@ -24,7 +24,7 @@
 
     // false true
     const SoftLettersSoftenPrevious = true;
-    const CompoundAccents = true;
+    let compoundAccents = GM_getValue('CompoundAccents', true);
     let compoundTallSmallLetters = GM_getValue('CompoundTallSmallLetters', false);
     const AddMarkings = false;
     const AppendOriginals = false;
@@ -41,11 +41,18 @@
         window.location.reload();
     });
     if (!disableTransliteration) {
-        GM_registerMenuCommand("Toggle compound tall small letters", () => {
-            compoundTallSmallLetters = !compoundTallSmallLetters;
-            GM_setValue('CompoundTallSmallLetters', compoundTallSmallLetters);
+        GM_registerMenuCommand("Toggle compound accents", () => {
+            compoundAccents = !compoundAccents;
+            GM_setValue('CompoundAccents', compoundAccents);
             window.location.reload();
         });
+        if (compoundAccents) {
+            GM_registerMenuCommand("Toggle compound tall small letters", () => {
+                compoundTallSmallLetters = !compoundTallSmallLetters;
+                GM_setValue('CompoundTallSmallLetters', compoundTallSmallLetters);
+                window.location.reload();
+            });
+        }
         GM_registerMenuCommand("Toggle Polish Ż", () => {
             polishŻ = !polishŻ;
             GM_setValue('PolishŻ', polishŻ);
@@ -324,7 +331,7 @@
                         if (czechŘ && (result.endsWith('r') || result.endsWith('R')) && replacement.startsWith(AcuteAccent)) {
                             replacement = CaronAccent + replacement.slice(1);
                         }
-                        if (CompoundAccents && replacement.startsWith(AcuteAccent)) {
+                        if (compoundAccents && replacement.startsWith(AcuteAccent)) {
                             let suffix = null;
                             if (result.endsWith(AcuteAccent)) {
                                 result = result.slice(0, -1);
