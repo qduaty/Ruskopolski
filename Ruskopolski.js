@@ -54,6 +54,7 @@
     let needsŁ = false;
     if (['ru', 'sr', 'sr-rs', 'uk', 'bg', 'be-tarask', 'be', 'mk'].includes(pageLang)
         || location.href.includes('x.com/')
+        || location.href.includes('facebook.com/photo/')
         || [...decodeURIComponent(location.href)].some(c => c >= '\u0400' && c <= '\u04FF'))
         isCyrillic = true;
 
@@ -391,22 +392,22 @@
 
     // "е Е ё Ё ю Ю я Я "
     function transliterate(textNode) {
-        let polishText = '';
+        let processedText = '';
         const origText = textNode.nodeValue;
         let word = '';
         for (let c of origText) {
             if ((c < '\u0400' || c > '\u04FF') && c != '\'') {
                 if (word.length) {
-                    polishText += processWord(word);
+                    processedText += processWord(word);
                     word = '';
                 }
-                polishText += c;
+                processedText += c;
             } else {
                 word += c;
             }
         }
-        if (word.length) polishText += processWord(word);
-        textNode.nodeValue = polishText;
+        if (word.length) processedText += processWord(word);
+        if(processedText != origText) textNode.nodeValue = processedText;
         //console.log(textNode.nodeValue);
     }
 
